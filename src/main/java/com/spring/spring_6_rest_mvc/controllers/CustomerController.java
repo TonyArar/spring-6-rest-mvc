@@ -18,6 +18,12 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @PutMapping(path = "{customerToBeReplacedID}")
+    public ResponseEntity replaceCustomerById(@PathVariable("customerToBeReplacedID") UUID customerToBeReplacedID, @RequestBody Customer newCustomer){
+        customerService.replaceCustomerById(customerToBeReplacedID, newCustomer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity handlePost(@RequestBody Customer customer){
 
