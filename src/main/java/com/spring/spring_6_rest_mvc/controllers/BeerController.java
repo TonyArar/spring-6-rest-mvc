@@ -21,6 +21,11 @@ public class BeerController {
 
     private final BeerService beerService;
 
+    @RequestMapping(path = "{beerToBeReplacedId}", method = RequestMethod.PUT)
+    public ResponseEntity replaceById(@PathVariable("beerToBeReplacedId") UUID beerToBeReplacedId, @RequestBody Beer newBeer){
+        beerService.replaceById(beerToBeReplacedId, newBeer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 
     // limit response to HTTP POST method
     // can also use convenience/shortcut-annotation @PostMapping
