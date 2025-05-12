@@ -4,6 +4,7 @@ import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +27,15 @@ public class BeerController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity handlePost(@RequestBody Beer beer){
         Beer savedBeer = beerService.saveNewBeer(beer);
-        //
-        return new ResponseEntity(HttpStatus.CREATED);
+
+        // best practice:
+        // created headers for response to return a location header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "api/v1/beers/" + savedBeer.getId());
+
+        // HttpStatus.CREATED = http response status code 201 created
+        // add headers to response
+        return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     // limit response to HTTP GET method
