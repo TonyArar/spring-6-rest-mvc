@@ -1,5 +1,6 @@
 package com.spring.spring_6_rest_mvc.services;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
 import com.spring.spring_6_rest_mvc.models.Customer;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Slf4j
 @Service
@@ -70,6 +72,20 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void removeById(UUID customerToBeRemovedId) {
         customerMap.remove(customerToBeRemovedId);
+    }
+
+    @Override
+    public void updateCustomerById(UUID customerToBeUpdatedId, Customer customerPatch) {
+        Customer customerToBeUpdated = customerMap.get(customerToBeUpdatedId);
+
+        String newName = customerPatch.getCustomerName();
+
+        Predicate<String> hasText = StringUtil::notNullNorEmpty;
+
+        if (hasText.test(newName)) {
+            customerToBeUpdated.setCustomerName(newName);
+        }
+
     }
 
 
