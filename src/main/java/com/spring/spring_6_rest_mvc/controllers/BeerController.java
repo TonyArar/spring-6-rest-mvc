@@ -22,13 +22,13 @@ public class BeerController {
     private final BeerService beerService;
 
     @DeleteMapping("{beerToBeRemovedId}")
-    public ResponseEntity removeById(@PathVariable("beerToBeRemovedId") UUID beerToBeRemovedId){
+    public ResponseEntity removeBeerById(@PathVariable("beerToBeRemovedId") UUID beerToBeRemovedId){
         beerService.removeById(beerToBeRemovedId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(path = "{beerToBeReplacedId}", method = RequestMethod.PUT)
-    public ResponseEntity replaceById(@PathVariable("beerToBeReplacedId") UUID beerToBeReplacedId, @RequestBody Beer newBeer){
+    public ResponseEntity replaceBeerById(@PathVariable("beerToBeReplacedId") UUID beerToBeReplacedId, @RequestBody Beer newBeer){
         beerService.replaceById(beerToBeReplacedId, newBeer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
