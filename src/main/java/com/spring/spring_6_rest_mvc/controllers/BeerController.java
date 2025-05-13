@@ -21,6 +21,12 @@ public class BeerController {
 
     private final BeerService beerService;
 
+    @PatchMapping("{beerToBeUpdatedId}")
+    public ResponseEntity updateBeerById(@PathVariable("beerToBeUpdatedId") UUID beerToBeUpdatedId, @RequestBody Beer beerPatchUpdate){
+        beerService.updateById(beerToBeUpdatedId, beerPatchUpdate);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
     @DeleteMapping("{beerToBeRemovedId}")
     public ResponseEntity removeBeerById(@PathVariable("beerToBeRemovedId") UUID beerToBeRemovedId){
         beerService.removeById(beerToBeRemovedId);

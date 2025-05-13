@@ -1,5 +1,6 @@
 package com.spring.spring_6_rest_mvc.services;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Slf4j
 @Service
@@ -88,6 +90,44 @@ public class BeerServiceImpl implements BeerService {
     @Override
     public void removeById(UUID beerToBeRemovedId) {
         beerMap.remove(beerToBeRemovedId);
+    }
+
+    @Override
+    public void updateById(UUID beerToBeUpdatedId, Beer beerPatchUpdate) {
+        Beer beerToBeUpdated = beerMap.get(beerToBeUpdatedId);
+
+        String newName = beerPatchUpdate.getBeerName();
+        BeerStyle newStyle = beerPatchUpdate.getBeerStyle();
+        String newUPC = beerPatchUpdate.getUpc();
+        Integer newQuantityOnHand = beerPatchUpdate.getQuantityOnHand();
+        BigDecimal newPrice = beerPatchUpdate.getPrice();
+
+        // predicates
+        Predicate<String> hasText = StringUtil::notNullNorEmpty;
+        Predicate<Object> notNull = Objects::nonNull;
+
+        if (hasText.test(newName)) {
+            beerToBeUpdated.setBeerName(newName);
+        }
+
+        if (notNull.test(newStyle)){
+            beerToBeUpdated.setBeerStyle(newStyle);
+        }
+
+        if (hasText.test(newUPC)){
+            beerToBeUpdated.setUpc(newUPC);
+        }
+
+        if (newQuantityOnHand >= 0){
+            beerToBeUpdated.setQuantityOnHand(newQuantityOnHand);
+        }
+
+        if (notNull.test(newPrice)){
+            beerToBeUpdated.setPrice(newPrice);
+        }
+
+        beerToBeUpdated.setUpdateDate(LocalDateTime.now());
+
     }
 
 }
