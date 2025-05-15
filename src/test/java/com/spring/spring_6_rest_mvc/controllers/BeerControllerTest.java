@@ -3,6 +3,7 @@ package com.spring.spring_6_rest_mvc.controllers;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
+import org.hamcrest.core.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,39 +19,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.mockito.BDDMockito.*;
 
+// restrict testing to controllers using WebMvcTest testing slice
 @WebMvcTest(controllers = {BeerController.class})
 class BeerControllerTest {
 
-    // MockMvc
+    // autowire MockMvc object that provides web app context (mark for spring with @Autowired)
     @Autowired
     MockMvc mockMvc;
 
-    // Mockito MockBean
+    // mock beer service (controller dependency) with Mockito using BeerService interface (not the implementation) and @MockitoBean
+    // mockito provides a mocked/fake implementation
     @MockitoBean
     BeerService beerService;
 
+    // just for convenience, use the data that we have in the implementation
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
 
     @Test
     void getBeerByID() throws Exception {
 
+        // getting data for stubbing
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
-        // use Mockito (BDDMockito) to mock data for beer service
-        // enforces a return value (data) on any method call in given()
-        // using any() and willReturn()
-        given(beerService.getBeerByID(any(UUID.class))).willReturn(testBeer);
+        // stubbing mocked service
+        given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
 
-        // use MockMvc to perform a mocked http GET request (built with MockMvcRequestBuilders)
-        // set accept header of mocked http GET request to json (application/json)
-        // perform the request using MockMvc
-        // then perform 2 expectation on the returned response (ResultActions object) using MockMvcResultMatchers
-        // first is that we get a OK HTTP status code (200)
-        // second is that the content type (body content type) is json
-        mockMvc.perform(get("/api/v1/beers/" + UUID.randomUUID())
+        // building request, performing it and performing expectations (similar to assertions) with matchers
+        mockMvc.perform(get("/api/v1/beers/" + testBeer.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", Is.is(testBeer.getId().toString())));
 
     }
 
