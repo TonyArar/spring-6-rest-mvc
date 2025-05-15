@@ -3,7 +3,7 @@ package com.spring.spring_6_rest_mvc.controllers;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
-import org.hamcrest.core.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.hamcrest.core.Is.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,7 +50,8 @@ class BeerControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", Is.is(testBeer.getId().toString())));
+                .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
+                .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
 
     }
 
