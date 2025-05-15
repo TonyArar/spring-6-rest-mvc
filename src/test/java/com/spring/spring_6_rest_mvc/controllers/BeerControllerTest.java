@@ -11,8 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.core.Is.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -35,6 +37,21 @@ class BeerControllerTest {
 
     // just for convenience, use the data that we have in the implementation
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+
+
+    @Test
+    void listBeers() throws Exception {
+
+        List<Beer> beerList = beerServiceImpl.listBeers();
+
+        given(beerService.listBeers()).willReturn(beerList);
+
+        mockMvc.perform(get("/api/v1/beers").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(5)));
+
+    }
 
     @Test
     void getBeerByID() throws Exception {
