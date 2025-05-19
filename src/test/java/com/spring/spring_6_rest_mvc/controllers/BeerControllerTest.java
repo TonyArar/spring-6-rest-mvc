@@ -52,6 +52,7 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
+
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         mockMvc.perform(patch("/api/v1/beers/" + beer.getId())

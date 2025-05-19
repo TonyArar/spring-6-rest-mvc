@@ -9,9 +9,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +39,9 @@ class CustomerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @MockitoBean
     CustomerService customerService;
 
@@ -42,6 +51,21 @@ class CustomerControllerTest {
     @BeforeEach
     void setUp(){
         customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void testUpdateCustomer() throws Exception {
+
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        mockMvc.perform(patch("/api/v1/customers/" + customer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(objectMapper)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+
     }
 
     @Test
@@ -104,5 +128,6 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.customerName", is(testCustomer.getCustomerName())));
 
     }
+
 
 }
