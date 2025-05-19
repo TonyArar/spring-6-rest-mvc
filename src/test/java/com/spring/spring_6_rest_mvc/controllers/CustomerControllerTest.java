@@ -44,7 +44,6 @@ class CustomerControllerTest {
         customerServiceImpl = new CustomerServiceImpl();
     }
 
-    // FIXME
     @Test
     void testCreateNewCustomer() throws Exception {
 

@@ -51,6 +51,23 @@ class BeerControllerTest {
     }
 
     @Test
+    void testUpdateBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        mockMvc.perform(patch("/api/v1/beers/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isNoContent());
+
+        // verifies that a certain behavior happened n number of times
+        // verify(mock, times(1)).someMethod("some arg");
+        // we use argument matchers here, but the dude in the course said
+        // that we will be using argument captors later
+        verify(beerService).updateById(any(UUID.class), any(Beer.class));
+    }
+
+    @Test
     void testCreateNewBeer() throws Exception {
 
         Beer newBeer = beerServiceImpl.listBeers().get(0);
