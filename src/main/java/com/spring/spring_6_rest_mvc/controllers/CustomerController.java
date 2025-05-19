@@ -30,13 +30,13 @@ public class CustomerController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping(path = "{customerToBeReplacedID}")
+    @PutMapping("{customerToBeReplacedID}")
     public ResponseEntity replaceCustomerById(@PathVariable("customerToBeReplacedID") UUID customerToBeReplacedID, @RequestBody Customer newCustomer){
         customerService.replaceCustomerById(customerToBeReplacedID, newCustomer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity handlePost(@RequestBody Customer customer){
 
         Customer savedCustomer = customerService.saveNewCustomer(customer);
@@ -47,12 +47,12 @@ public class CustomerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<Customer> listCustomers() {
         return customerService.listCustomers();
     }
 
-    @RequestMapping(path = "{customerID}", method = RequestMethod.GET)
+    @GetMapping("{customerID}")
     public Customer getCustomerByID(@PathVariable("customerID") UUID id) {
         return customerService.getCustomerByID(id);
     }
