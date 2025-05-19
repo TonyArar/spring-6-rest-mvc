@@ -1,9 +1,12 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,14 +33,40 @@ class BeerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    // spring can autowire a jackson ObjectMapper
+    @Autowired
+    ObjectMapper objectMapper;
+
     // mock beer service (controller dependency) with Mockito using BeerService interface (not the implementation) and @MockitoBean
     // mockito provides a mocked/fake implementation
     @MockitoBean
     BeerService beerService;
 
     // just for convenience, use the data that we have in the implementation
-    BeerServiceImpl beerServiceImpl = new BeerServiceImpl();
+    BeerServiceImpl beerServiceImpl;
 
+    @BeforeEach
+    void setUp(){
+        beerServiceImpl = new BeerServiceImpl();
+    }
+
+    @Test
+    void testCreateNewBeer() throws Exception {
+
+        Beer newBeer = beerServiceImpl.listBeers().get(0);
+        newBeer.setVersion(null);
+        newBeer.setId(null);
+
+        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
+
+        mockMvc.perform(post("/api/v1/beers")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newBeer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+    }
 
     @Test
     void listBeers() throws Exception {

@@ -1,14 +1,14 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.spring_6_rest_mvc.models.Customer;
 import com.spring.spring_6_rest_mvc.services.CustomerService;
 import com.spring.spring_6_rest_mvc.services.CustomerServiceImpl;
-import org.hamcrest.core.Is;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -37,7 +37,36 @@ class CustomerControllerTest {
     CustomerService customerService;
 
     // data source
-    CustomerServiceImpl customerServiceImpl = new CustomerServiceImpl();
+    CustomerServiceImpl customerServiceImpl;
+
+    @BeforeEach
+    void setUp(){
+        customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    // FIXME
+    @Test
+    void testCreateNewCustomer() throws Exception {
+
+        // create new data
+        Customer newCustomer = customerServiceImpl.listCustomers().get(0);
+        newCustomer.setVersion(null);
+        newCustomer.setId(null);
+
+        // stub mocked service
+        given(customerService.saveNewCustomer(any(Customer.class))).willReturn(newCustomer);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+
+        mockMvc.perform(post("/api/v1/customers")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newCustomer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+    }
 
     @Test
     void listCustomers() throws Exception {
