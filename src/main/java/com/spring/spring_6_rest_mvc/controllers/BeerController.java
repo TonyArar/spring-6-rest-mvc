@@ -34,15 +34,21 @@ public class BeerController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(path = "{beerToBeReplacedId}", method = RequestMethod.PUT)
+    // FIXME: handle case: non-existing resource
+    @PutMapping("{beerToBeReplacedId}")
     public ResponseEntity replaceBeerById(@PathVariable("beerToBeReplacedId") UUID beerToBeReplacedId, @RequestBody Beer newBeer){
-        beerService.replaceById(beerToBeReplacedId, newBeer);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+
+        try {
+            beerService.replaceById(beerToBeReplacedId, newBeer);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (Exception resourceNotFoundException){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
     }
 
     // limit response to HTTP POST method
-    // can also use convenience/shortcut-annotation @PostMapping
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity handlePost(@RequestBody Beer beer){
         Beer savedBeer = beerService.saveNewBeer(beer);
 
@@ -57,13 +63,13 @@ public class BeerController {
     }
 
     // limit response to HTTP GET method
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<Beer> listBeers(){
         return beerService.listBeers();
     }
 
     // append path variable {beerID} to base-path and limit response to HTTP GET method
-    @RequestMapping(path = "{beerID}", method = RequestMethod.GET)
+    @GetMapping("{beerID}")
     public Beer getBeerByID(@PathVariable("beerID") UUID id){
 
         log.debug("getBeerByID() called by BeerController controller");
