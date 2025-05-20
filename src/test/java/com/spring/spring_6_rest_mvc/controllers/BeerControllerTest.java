@@ -8,6 +8,7 @@ import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -48,6 +49,34 @@ class BeerControllerTest {
     @BeforeEach
     void setUp(){
         beerServiceImpl = new BeerServiceImpl();
+    }
+
+    @Test
+    void testRemoveBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        mockMvc.perform(delete("/api/v1/beers/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        // using an argument captor:
+        // captor listens on the mock for passed arguments,
+        // later we get the value passed and can perform assertions/verifications
+        // for example to make sure the right value was passed
+        // this is useful for example if we have a lot of layers/objects the passed data
+        // is going through, and we want to make sure that it is not mutated for example
+        // or that the right arguments are produced by the last layer for example
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+
+        // verify that behaviour happened for any argument
+        // verify(beerServiceImpl).removeById(any(UUID.class));
+
+        // verify that behaviour happened for passed argument
+        // capture() MUST be used inside of verification
+        verify(beerService).removeById(uuidArgumentCaptor.capture());
+
+        // assert that passed (captured) argument is equal to what we expected to be passed
+        assertEquals(beer.getId(), uuidArgumentCaptor.getValue());
     }
 
     @Test
