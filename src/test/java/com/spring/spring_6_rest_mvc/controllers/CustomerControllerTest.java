@@ -8,6 +8,7 @@ import com.spring.spring_6_rest_mvc.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.BeansException;
@@ -51,6 +52,9 @@ class CustomerControllerTest {
     // data source
     CustomerServiceImpl customerServiceImpl;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
     @BeforeEach
     void setUp(){
         customerServiceImpl = new CustomerServiceImpl();
@@ -63,8 +67,6 @@ class CustomerControllerTest {
 
         mockMvc.perform(delete("/api/v1/customers/" + customer.getId()))
                 .andExpect(status().isNoContent());
-
-        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
 
         verify(customerService).removeById(uuidArgumentCaptor.capture());
 
