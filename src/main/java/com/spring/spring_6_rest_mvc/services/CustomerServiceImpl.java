@@ -47,7 +47,6 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMap.get(id);
     }
 
-
     @Override
     public Customer saveNewCustomer(Customer customer) {
         Customer customerToBeSaved = Customer.builder()

@@ -7,6 +7,7 @@ import com.spring.spring_6_rest_mvc.services.CustomerService;
 import com.spring.spring_6_rest_mvc.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.BeansException;
@@ -20,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.print.attribute.standard.Media;
 
 import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -51,6 +54,22 @@ class CustomerControllerTest {
     @BeforeEach
     void setUp(){
         customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void testRemoveCustomer() throws Exception{
+
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        mockMvc.perform(delete("/api/v1/customers/" + customer.getId()))
+                .andExpect(status().isNoContent());
+
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+
+        verify(customerService).removeById(uuidArgumentCaptor.capture());
+
+        assertEquals(customer.getId(), uuidArgumentCaptor.getValue());
+
     }
 
     @Test

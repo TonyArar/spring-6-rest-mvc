@@ -65,7 +65,7 @@ class BeerControllerTest {
         // for example to make sure the right value was passed
         // this is useful for example if we have a lot of layers/objects the passed data
         // is going through, and we want to make sure that it is not mutated for example
-        // or that the right arguments are produced by the last layer for example
+        // or that the right arguments are produced/passed by the last layer for example
         ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
 
         // verify that behaviour happened for any argument
@@ -73,9 +73,12 @@ class BeerControllerTest {
 
         // verify that behaviour happened for passed argument
         // capture() MUST be used inside of verification
+        // capture() stores (captures) the argument value so that we can use it
+        // later to perform assertions
         verify(beerService).removeById(uuidArgumentCaptor.capture());
 
         // assert that passed (captured) argument is equal to what we expected to be passed
+        // getValue() gets captured argument value
         assertEquals(beer.getId(), uuidArgumentCaptor.getValue());
     }
 
