@@ -1,6 +1,5 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
@@ -9,13 +8,16 @@ import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,9 +48,43 @@ class BeerControllerTest {
     // just for convenience, use the data that we have in the implementation
     BeerServiceImpl beerServiceImpl;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Beer> beerArgumentCaptor;
+
     @BeforeEach
     void setUp(){
         beerServiceImpl = new BeerServiceImpl();
+    }
+
+    @Test
+    void testUpdateBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        // we don't have to provide an entire beer object for Jackson
+        // we can mimic what a client would send as a patch with a map
+        // and then marshall it with the ObjectMapper
+        Map<String, Object> beerPatch = new HashMap<>();
+        beerPatch.put("beerName", "TEST NAME");
+
+        mockMvc.perform(patch("/api/v1/beers/" + beer.getId())
+                        .content(objectMapper.writeValueAsString(beerPatch))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        // make sure that updateById() was called after performing the request
+        // and capture the passed arguments
+        verify(beerService).updateById(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+
+        // make sure that the argument (ID) passed to updateById() is the same as the one in the URI
+        assertEquals(beer.getId(), uuidArgumentCaptor.getValue());
+
+        // make sure that the argument (beer name) passed to updateById() is the same as in the request body
+        assertEquals(beerPatch.get("beerName"), beerArgumentCaptor.getValue().getBeerName());
+
     }
 
     @Test
@@ -83,11 +119,11 @@ class BeerControllerTest {
     }
 
     @Test
-    void testUpdateBeer() throws Exception {
+    void testReplaceBeer() throws Exception {
 
         Beer beer = beerServiceImpl.listBeers().get(0);
 
-        mockMvc.perform(patch("/api/v1/beers/" + beer.getId())
+        mockMvc.perform(put("/api/v1/beers/" + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -97,7 +133,7 @@ class BeerControllerTest {
         // verify(mock, times(1)).someMethod("some arg");
         // we use argument matchers here, but the dude in the course said
         // that we will be using argument captors later
-        verify(beerService).updateById(any(UUID.class), any(Beer.class));
+        verify(beerService).replaceById(any(UUID.class), any(Beer.class));
     }
 
     @Test

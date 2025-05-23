@@ -32,8 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.mockito.BDDMockito.*;
 
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,9 +54,33 @@ class CustomerControllerTest {
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
+
     @BeforeEach
     void setUp(){
         customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void testUpdateCustomer() throws Exception {
+
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        Map<String, Object> customerPatch = new HashMap<>();
+        customerPatch.put("customerName", "TEST NAME");
+
+        mockMvc.perform(patch("/api/v1/customers/" + customer.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerPatch)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).updateCustomerById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+
+        assertEquals(customer.getId(), uuidArgumentCaptor.getValue());
+        assertEquals(customerPatch.get("customerName"), customerArgumentCaptor.getValue().getCustomerName());
+
     }
 
     @Test
@@ -75,17 +98,17 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testUpdateCustomer() throws Exception {
+    void testReplaceCustomer() throws Exception {
 
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
-        mockMvc.perform(patch("/api/v1/customers/" + customer.getId())
+        mockMvc.perform(put("/api/v1/customers/" + customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(objectMapper)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+        verify(customerService).replaceCustomerById(any(UUID.class), any(Customer.class));
 
     }
 
