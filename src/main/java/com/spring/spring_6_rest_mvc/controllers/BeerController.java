@@ -2,7 +2,6 @@ package com.spring.spring_6_rest_mvc.controllers;
 
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -16,27 +15,31 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-// base-path-mapping for all methods
-@RequestMapping("/api/v1/beers")
 public class BeerController {
+
+    // URIs/paths and co.
+    public static final String PATH_ALL_BEERS = "/api/v1/beers";
+    public static final String PATHVAR_BEER_ID = "beerID";
+    public static final String PATH_BEER_BY_ID =
+            PATH_ALL_BEERS + "/{" + PATHVAR_BEER_ID + "}";
 
     private final BeerService beerService;
 
-    @PatchMapping("{beerToBeUpdatedId}")
-    public ResponseEntity updateBeerById(@PathVariable("beerToBeUpdatedId") UUID beerToBeUpdatedId, @RequestBody Beer beerPatchUpdate){
+    @PatchMapping(PATH_BEER_BY_ID)
+    public ResponseEntity updateBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeUpdatedId, @RequestBody Beer beerPatchUpdate){
         beerService.updateById(beerToBeUpdatedId, beerPatchUpdate);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("{beerToBeRemovedId}")
-    public ResponseEntity removeBeerById(@PathVariable("beerToBeRemovedId") UUID beerToBeRemovedId){
+    @DeleteMapping(PATH_BEER_BY_ID)
+    public ResponseEntity removeBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeRemovedId){
         beerService.removeById(beerToBeRemovedId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     // FIXME: handle case: non-existing resource
-    @PutMapping("{beerToBeReplacedId}")
-    public ResponseEntity replaceBeerById(@PathVariable("beerToBeReplacedId") UUID beerToBeReplacedId, @RequestBody Beer newBeer){
+    @PutMapping(PATH_BEER_BY_ID)
+    public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId, @RequestBody Beer newBeer){
 
         try {
             beerService.replaceById(beerToBeReplacedId, newBeer);
@@ -47,9 +50,8 @@ public class BeerController {
 
     }
 
-    // limit response to HTTP POST method
-    @PostMapping
-    public ResponseEntity handlePost(@RequestBody Beer beer){
+    @PostMapping(PATH_ALL_BEERS)
+    public ResponseEntity createBeer(@RequestBody Beer beer){
         Beer savedBeer = beerService.saveNewBeer(beer);
 
         // best practice:
@@ -62,15 +64,13 @@ public class BeerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    // limit response to HTTP GET method
-    @GetMapping
+    @GetMapping(PATH_ALL_BEERS)
     public List<Beer> listBeers(){
         return beerService.listBeers();
     }
 
-    // append path variable {beerID} to base-path and limit response to HTTP GET method
-    @GetMapping("{beerID}")
-    public Beer getBeerByID(@PathVariable("beerID") UUID id){
+    @GetMapping(PATH_BEER_BY_ID)
+    public Beer getBeerByID(@PathVariable(PATHVAR_BEER_ID) UUID id){
 
         log.debug("getBeerByID() called by BeerController controller");
 
