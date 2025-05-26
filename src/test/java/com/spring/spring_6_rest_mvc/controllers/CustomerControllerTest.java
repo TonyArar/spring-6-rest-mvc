@@ -70,7 +70,7 @@ class CustomerControllerTest {
         Map<String, Object> customerPatch = new HashMap<>();
         customerPatch.put("customerName", "TEST NAME");
 
-        mockMvc.perform(patch(CustomerController.PATH_ALL_CUSTOMERS + "/" + customer.getId())
+        mockMvc.perform(patch(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerPatch)))
@@ -88,7 +88,7 @@ class CustomerControllerTest {
 
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
-        mockMvc.perform(delete(CustomerController.PATH_ALL_CUSTOMERS + "/" + customer.getId()))
+        mockMvc.perform(delete(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId()))
                 .andExpect(status().isNoContent());
 
         verify(customerService).removeById(uuidArgumentCaptor.capture());
@@ -102,7 +102,7 @@ class CustomerControllerTest {
 
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
-        mockMvc.perform(put(CustomerController.PATH_ALL_CUSTOMERS + "/" + customer.getId())
+        mockMvc.perform(put(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(objectMapper)))
@@ -165,7 +165,7 @@ class CustomerControllerTest {
 
         // build request, perform it and perform expectation on result
         // using MockMvc, Builders, Matchers and Actions
-        mockMvc.perform(get(CustomerController.PATH_ALL_CUSTOMERS + "/" + UUID.randomUUID())
+        mockMvc.perform(get(CustomerController.PATH_CUSTOMER_BY_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id", is(testCustomer.getId().toString())))

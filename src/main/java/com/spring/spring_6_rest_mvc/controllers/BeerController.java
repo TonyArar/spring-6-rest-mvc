@@ -40,14 +40,8 @@ public class BeerController {
     // FIXME: handle case: non-existing resource
     @PutMapping(PATH_BEER_BY_ID)
     public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId, @RequestBody Beer newBeer){
-
-        try {
-            beerService.replaceById(beerToBeReplacedId, newBeer);
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        } catch (Exception resourceNotFoundException){
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-
+        beerService.replaceById(beerToBeReplacedId, newBeer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(PATH_ALL_BEERS)

@@ -1,6 +1,7 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring.spring_6_rest_mvc.Exceptions.ResourceNotFoundException;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
@@ -61,6 +62,17 @@ class BeerControllerTest {
     }
 
     @Test
+    void getBeerByIDBeerNotFound() throws Exception {
+
+        given(beerService.getBeerByID(any(UUID.class))).willThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get(BeerController.PATH_BEER_BY_ID, UUID.randomUUID())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+    }
+
+    @Test
     void testUpdateBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
@@ -70,7 +82,7 @@ class BeerControllerTest {
         Map<String, Object> beerPatch = new HashMap<>();
         beerPatch.put("beerName", "TEST NAME");
 
-        mockMvc.perform(patch(BeerController.PATH_ALL_BEERS + "/" + beer.getId())
+        mockMvc.perform(patch(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .content(objectMapper.writeValueAsString(beerPatch))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -92,7 +104,7 @@ class BeerControllerTest {
     void testRemoveBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
-        mockMvc.perform(delete(BeerController.PATH_ALL_BEERS + "/" + beer.getId())
+        mockMvc.perform(delete(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -124,7 +136,7 @@ class BeerControllerTest {
 
         Beer beer = beerServiceImpl.listBeers().get(0);
 
-        mockMvc.perform(put(BeerController.PATH_ALL_BEERS + "/" + beer.getId())
+        mockMvc.perform(put(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -179,7 +191,7 @@ class BeerControllerTest {
         given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
 
         // building request, performing it and performing expectations (similar to assertions) with matchers
-        mockMvc.perform(get(BeerController.PATH_ALL_BEERS + "/" + testBeer.getId())
+        mockMvc.perform(get(BeerController.PATH_BEER_BY_ID, testBeer.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
