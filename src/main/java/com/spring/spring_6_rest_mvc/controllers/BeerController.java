@@ -1,5 +1,6 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
+import com.spring.spring_6_rest_mvc.Exceptions.ResourceNotFoundException;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,19 @@ import java.util.UUID;
 public class BeerController {
 
     // URIs/paths and co.
+
     public static final String PATH_ALL_BEERS = "/api/v1/beers";
     public static final String PATHVAR_BEER_ID = "beerID";
     public static final String PATH_BEER_BY_ID =
             PATH_ALL_BEERS + "/{" + PATHVAR_BEER_ID + "}";
 
+
+    // Dependencies
+
     private final BeerService beerService;
+
+
+    // REST API Endpoints
 
     @PatchMapping(PATH_BEER_BY_ID)
     public ResponseEntity updateBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeUpdatedId, @RequestBody Beer beerPatchUpdate){
@@ -70,5 +78,20 @@ public class BeerController {
 
         return beerService.getBeerByID(id);
     }
+
+
+    // Exception handling, usually done another way and globally, this here is local to this controller
+    // exception handling just for demonstration purposes, the exception is thrown by mockito in
+    // test class, framework behaviour: if any method in this controller throws the particular exception,
+    // then this is called by the framework as the handler
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity handleResourceNotFound(){
+        // just to make sure it is getting called
+        System.out.println("handleResourceNotFound");
+        return ResponseEntity.notFound().build();
+    }
+
+
 
 }
