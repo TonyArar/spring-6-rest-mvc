@@ -2,6 +2,7 @@ package com.spring.spring_6_rest_mvc.controllers;
 
 import com.spring.spring_6_rest_mvc.models.Customer;
 import com.spring.spring_6_rest_mvc.services.CustomerService;
+import com.spring.spring_6_rest_mvc.exceptions.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,7 @@ public class CustomerController {
 
     @GetMapping(PATH_CUSTOMER_BY_ID)
     public Customer getCustomerByID(@PathVariable(PATHVAR_CUSTOMER_ID) UUID id) {
-        return customerService.getCustomerByID(id);
+        return customerService.getCustomerByID(id).orElseThrow(ResourceNotFoundException::new);
     }
 
 

@@ -2,6 +2,7 @@ package com.spring.spring_6_rest_mvc.controllers;
 
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
+import com.spring.spring_6_rest_mvc.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -76,7 +77,7 @@ public class BeerController {
 
         log.debug("getBeerByID() called by BeerController controller");
 
-        return beerService.getBeerByID(id);
+        return beerService.getBeerByID(id).orElseThrow(ResourceNotFoundException::new);
     }
 
 

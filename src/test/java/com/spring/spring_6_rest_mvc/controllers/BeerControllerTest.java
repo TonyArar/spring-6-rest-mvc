@@ -16,10 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.core.Is.*;
@@ -64,7 +61,7 @@ class BeerControllerTest {
     @Test
     void getBeerByIDBeerNotFound() throws Exception {
 
-        given(beerService.getBeerByID(any(UUID.class))).willThrow(ResourceNotFoundException.class);
+        given(beerService.getBeerByID(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(BeerController.PATH_BEER_BY_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON))
@@ -188,9 +185,10 @@ class BeerControllerTest {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
         // stubbing mocked service
-        given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
+        given(beerService.getBeerByID(testBeer.getId())).willReturn(Optional.of(testBeer));
 
-        // building request, performing it and performing expectations (similar to assertions) with matchers
+        // building request, performing it and performing expectations
+        // (similar to assertions) with matchers
         mockMvc.perform(get(BeerController.PATH_BEER_BY_ID, testBeer.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

@@ -55,7 +55,7 @@ class CustomerControllerTest {
     @Test
     void getCustomerByIDBeerNotFound() throws Exception {
 
-        given(customerService.getCustomerByID(any(UUID.class))).willThrow(ResourceNotFoundException.class);
+        given(customerService.getCustomerByID(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(CustomerController.PATH_CUSTOMER_BY_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON))
@@ -162,7 +162,7 @@ class CustomerControllerTest {
         Customer testCustomer = customerServiceImpl.listCustomers().get(0);
 
         // stub mocked CustomerService
-        given(customerService.getCustomerByID(any(UUID.class))).willReturn(testCustomer);
+        given(customerService.getCustomerByID(any(UUID.class))).willReturn(Optional.of(testCustomer));
 
         // build request, perform it and perform expectation on result
         // using MockMvc, Builders, Matchers and Actions
