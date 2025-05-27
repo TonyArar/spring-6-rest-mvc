@@ -1,4 +1,4 @@
-package com.spring.spring_6_rest_mvc.Exceptions;
+package com.spring.spring_6_rest_mvc.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 

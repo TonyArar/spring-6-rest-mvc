@@ -1,7 +1,7 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.spring_6_rest_mvc.Exceptions.ResourceNotFoundException;
+import com.spring.spring_6_rest_mvc.exceptions.ResourceNotFoundException;
 import com.spring.spring_6_rest_mvc.models.Beer;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;

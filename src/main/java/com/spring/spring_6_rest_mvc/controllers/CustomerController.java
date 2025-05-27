@@ -18,6 +18,7 @@ public class CustomerController {
     // URIs/paths and co.
     public static final String PATH_ALL_CUSTOMERS = "/api/v1/customers";
     public static final String PATHVAR_CUSTOMER_ID = "customerID";
+    // "/api/v1/customers/{customerID}"
     public static final String PATH_CUSTOMER_BY_ID =
             PATH_ALL_CUSTOMERS + "/{" + PATHVAR_CUSTOMER_ID + "}";
 
