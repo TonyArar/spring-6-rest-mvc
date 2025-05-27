@@ -15,11 +15,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 // (not annotated with @ResponseBody at the class level)
 
 // global/shared/centralized exception handling among multiple controllers
-@ControllerAdvice
+
+// << for full control over exception handling, response body and response status code >>
+// << commented out in favour of a simplified version using @ResponseStatus in Exception class>>
+
+// @ControllerAdvice
 public class ExceptionController {
 
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    // @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity handleResourceNotFound(){
         // just to make sure it is getting called
         System.out.println("handleResourceNotFound");
