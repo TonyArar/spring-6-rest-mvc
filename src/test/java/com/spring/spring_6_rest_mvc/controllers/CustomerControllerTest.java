@@ -1,8 +1,7 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.spring_6_rest_mvc.exceptions.ResourceNotFoundException;
-import com.spring.spring_6_rest_mvc.models.Customer;
+import com.spring.spring_6_rest_mvc.dtos.CustomerDTO;
 import com.spring.spring_6_rest_mvc.services.CustomerService;
 import com.spring.spring_6_rest_mvc.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +44,7 @@ class CustomerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Customer> customerArgumentCaptor;
+    ArgumentCaptor<CustomerDTO> customerArgumentCaptor;
 
     @BeforeEach
     void setUp(){
@@ -66,7 +65,7 @@ class CustomerControllerTest {
     @Test
     void testUpdateCustomer() throws Exception {
 
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
         Map<String, Object> customerPatch = new HashMap<>();
         customerPatch.put("customerName", "TEST NAME");
@@ -87,7 +86,7 @@ class CustomerControllerTest {
     @Test
     void testRemoveCustomer() throws Exception{
 
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
         mockMvc.perform(delete(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId()))
                 .andExpect(status().isNoContent());
@@ -101,7 +100,7 @@ class CustomerControllerTest {
     @Test
     void testReplaceCustomer() throws Exception {
 
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
         mockMvc.perform(put(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -109,7 +108,7 @@ class CustomerControllerTest {
                         .content(objectMapper.writeValueAsString(objectMapper)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).replaceCustomerById(any(UUID.class), any(Customer.class));
+        verify(customerService).replaceCustomerById(any(UUID.class), any(CustomerDTO.class));
 
     }
 
@@ -117,12 +116,12 @@ class CustomerControllerTest {
     void testCreateNewCustomer() throws Exception {
 
         // create new data
-        Customer newCustomer = customerServiceImpl.listCustomers().get(0);
+        CustomerDTO newCustomer = customerServiceImpl.listCustomers().get(0);
         newCustomer.setVersion(null);
         newCustomer.setId(null);
 
         // stub mocked service
-        given(customerService.saveNewCustomer(any(Customer.class))).willReturn(newCustomer);
+        given(customerService.saveNewCustomer(any(CustomerDTO.class))).willReturn(newCustomer);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
@@ -140,7 +139,7 @@ class CustomerControllerTest {
     void listCustomers() throws Exception {
 
         // get data
-        List<Customer> customerList = customerServiceImpl.listCustomers();
+        List<CustomerDTO> customerList = customerServiceImpl.listCustomers();
 
         // stub mocked CustomerService
         given(customerService.listCustomers()).willReturn(customerList);
@@ -159,7 +158,7 @@ class CustomerControllerTest {
     void getCustomerByID() throws Exception {
 
         // get data
-        Customer testCustomer = customerServiceImpl.listCustomers().get(0);
+        CustomerDTO testCustomer = customerServiceImpl.listCustomers().get(0);
 
         // stub mocked CustomerService
         given(customerService.getCustomerByID(any(UUID.class))).willReturn(Optional.of(testCustomer));

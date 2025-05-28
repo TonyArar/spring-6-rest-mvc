@@ -1,6 +1,6 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
-import com.spring.spring_6_rest_mvc.models.Beer;
+import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.exceptions.*;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class BeerController {
     // REST API Endpoints
 
     @PatchMapping(PATH_BEER_BY_ID)
-    public ResponseEntity updateBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeUpdatedId, @RequestBody Beer beerPatchUpdate){
+    public ResponseEntity updateBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeUpdatedId, @RequestBody BeerDTO beerPatchUpdate){
         beerService.updateById(beerToBeUpdatedId, beerPatchUpdate);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -48,14 +48,14 @@ public class BeerController {
 
     // FIXME: handle case: non-existing resource
     @PutMapping(PATH_BEER_BY_ID)
-    public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId, @RequestBody Beer newBeer){
+    public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId, @RequestBody BeerDTO newBeer){
         beerService.replaceById(beerToBeReplacedId, newBeer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(PATH_ALL_BEERS)
-    public ResponseEntity createBeer(@RequestBody Beer beer){
-        Beer savedBeer = beerService.saveNewBeer(beer);
+    public ResponseEntity createBeer(@RequestBody BeerDTO beer){
+        BeerDTO savedBeer = beerService.saveNewBeer(beer);
 
         // best practice:
         // created headers for response to return a location header
@@ -68,12 +68,12 @@ public class BeerController {
     }
 
     @GetMapping(PATH_ALL_BEERS)
-    public List<Beer> listBeers(){
+    public List<BeerDTO> listBeers(){
         return beerService.listBeers();
     }
 
     @GetMapping(PATH_BEER_BY_ID)
-    public Beer getBeerByID(@PathVariable(PATHVAR_BEER_ID) UUID id){
+    public BeerDTO getBeerByID(@PathVariable(PATHVAR_BEER_ID) UUID id){
 
         log.debug("getBeerByID() called by BeerController controller");
 

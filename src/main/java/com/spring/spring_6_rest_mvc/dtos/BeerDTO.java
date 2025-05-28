@@ -1,4 +1,4 @@
-package com.spring.spring_6_rest_mvc.models;
+package com.spring.spring_6_rest_mvc.dtos;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class Beer {
+public class BeerDTO {
 
     private UUID id;
     private Integer version;

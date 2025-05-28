@@ -2,8 +2,8 @@ package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
-import com.spring.spring_6_rest_mvc.models.Beer;
-import com.spring.spring_6_rest_mvc.models.BeerStyle;
+import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
+import com.spring.spring_6_rest_mvc.dtos.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 @Service
 public class BeerServiceImpl implements BeerService {
 
-    private Map<UUID, Beer> beerMap;
+    private Map<UUID, BeerDTO> beerMap;
 
     public BeerServiceImpl(){
 
@@ -27,7 +27,7 @@ public class BeerServiceImpl implements BeerService {
 
         for (int i = 1; i <= numberOfGeneratedBeers; i++){
             Random random = new Random();
-            Beer beer = Beer.builder()
+            BeerDTO beer = BeerDTO.builder()
                     .id(UUID.randomUUID())
                     .version(random.nextInt(1,5))
                     .beerName(faker.beer().name())
@@ -44,20 +44,20 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public List<Beer> listBeers(){
-        return new ArrayList<Beer>(beerMap.values());
+    public List<BeerDTO> listBeers(){
+        return new ArrayList<BeerDTO>(beerMap.values());
     }
 
     @Override
-    public Optional<Beer> getBeerByID(UUID id) {
+    public Optional<BeerDTO> getBeerByID(UUID id) {
         return Optional.ofNullable(beerMap.get(id));
     }
 
     @Override
-    public Beer saveNewBeer(Beer beer) {
+    public BeerDTO saveNewBeer(BeerDTO beer) {
         // build beer from received beer to give id and dates
         // because we won't get that from client request
-        Beer beerToBeSaved = Beer.builder()
+        BeerDTO beerToBeSaved = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
@@ -73,9 +73,9 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void replaceById(UUID beerToBeReplacedId, Beer newBeer) {
+    public void replaceById(UUID beerToBeReplacedId, BeerDTO newBeer) {
 
-        Beer existingBeer = beerMap.get(beerToBeReplacedId);
+        BeerDTO existingBeer = beerMap.get(beerToBeReplacedId);
 
         existingBeer.setBeerName(newBeer.getBeerName());
         existingBeer.setBeerStyle(newBeer.getBeerStyle());
@@ -93,8 +93,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void updateById(UUID beerToBeUpdatedId, Beer beerPatchUpdate) {
-        Beer beerToBeUpdated = beerMap.get(beerToBeUpdatedId);
+    public void updateById(UUID beerToBeUpdatedId, BeerDTO beerPatchUpdate) {
+        BeerDTO beerToBeUpdated = beerMap.get(beerToBeUpdatedId);
 
         String newName = beerPatchUpdate.getBeerName();
         BeerStyle newStyle = beerPatchUpdate.getBeerStyle();

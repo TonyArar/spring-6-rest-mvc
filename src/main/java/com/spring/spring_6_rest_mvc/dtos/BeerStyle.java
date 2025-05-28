@@ -1,4 +1,4 @@
-package com.spring.spring_6_rest_mvc.models;
+package com.spring.spring_6_rest_mvc.dtos;
 
 public enum BeerStyle {
 

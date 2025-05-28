@@ -1,8 +1,7 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.spring_6_rest_mvc.exceptions.ResourceNotFoundException;
-import com.spring.spring_6_rest_mvc.models.Beer;
+import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
 
@@ -51,7 +50,7 @@ class BeerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Beer> beerArgumentCaptor;
+    ArgumentCaptor<BeerDTO> beerArgumentCaptor;
 
     @BeforeEach
     void setUp(){
@@ -71,7 +70,7 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         // we don't have to provide an entire beer object for Jackson
         // we can mimic what a client would send as a patch with a map
@@ -99,7 +98,7 @@ class BeerControllerTest {
 
     @Test
     void testRemoveBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         mockMvc.perform(delete(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -131,7 +130,7 @@ class BeerControllerTest {
     @Test
     void testReplaceBeer() throws Exception {
 
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         mockMvc.perform(put(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -143,17 +142,17 @@ class BeerControllerTest {
         // verify(mock, times(1)).someMethod("some arg");
         // we use argument matchers here, but the dude in the course said
         // that we will be using argument captors later
-        verify(beerService).replaceById(any(UUID.class), any(Beer.class));
+        verify(beerService).replaceById(any(UUID.class), any(BeerDTO.class));
     }
 
     @Test
     void testCreateNewBeer() throws Exception {
 
-        Beer newBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO newBeer = beerServiceImpl.listBeers().get(0);
         newBeer.setVersion(null);
         newBeer.setId(null);
 
-        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         mockMvc.perform(post(BeerController.PATH_ALL_BEERS)
                         .accept(MediaType.APPLICATION_JSON)
@@ -167,7 +166,7 @@ class BeerControllerTest {
     @Test
     void listBeers() throws Exception {
 
-        List<Beer> beerList = beerServiceImpl.listBeers();
+        List<BeerDTO> beerList = beerServiceImpl.listBeers();
 
         given(beerService.listBeers()).willReturn(beerList);
 
@@ -182,7 +181,7 @@ class BeerControllerTest {
     void getBeerByID() throws Exception {
 
         // getting data for stubbing
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
 
         // stubbing mocked service
         given(beerService.getBeerByID(testBeer.getId())).willReturn(Optional.of(testBeer));
