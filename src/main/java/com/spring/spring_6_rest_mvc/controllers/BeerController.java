@@ -1,8 +1,8 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
-import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
+import com.spring.spring_6_rest_mvc.exception_handling.ResourceNotFoundException;
+import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.services.BeerService;
-import com.spring.spring_6_rest_mvc.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -18,10 +18,12 @@ import java.util.UUID;
 @RestController
 public class BeerController {
 
+
     // URIs/paths and co.
 
     public static final String PATH_ALL_BEERS = "/api/v1/beers";
     public static final String PATHVAR_BEER_ID = "beerID";
+
     // "/api/v1/beers/{beerID}"
     public static final String PATH_BEER_BY_ID =
             PATH_ALL_BEERS + "/{" + PATHVAR_BEER_ID + "}";
@@ -36,19 +38,21 @@ public class BeerController {
 
     @PatchMapping(PATH_BEER_BY_ID)
     public ResponseEntity updateBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeUpdatedId, @RequestBody BeerDTO beerPatchUpdate){
+        if (!beerService.beerExists(beerToBeUpdatedId)) throw new ResourceNotFoundException();
         beerService.updateById(beerToBeUpdatedId, beerPatchUpdate);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(PATH_BEER_BY_ID)
     public ResponseEntity removeBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeRemovedId){
+        if (!beerService.beerExists(beerToBeRemovedId)) throw new ResourceNotFoundException();
         beerService.removeById(beerToBeRemovedId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    // FIXME: handle case: non-existing resource
     @PutMapping(PATH_BEER_BY_ID)
     public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId, @RequestBody BeerDTO newBeer){
+        if (!beerService.beerExists(beerToBeReplacedId)) throw new ResourceNotFoundException();
         beerService.replaceById(beerToBeReplacedId, newBeer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -56,14 +60,10 @@ public class BeerController {
     @PostMapping(PATH_ALL_BEERS)
     public ResponseEntity createBeer(@RequestBody BeerDTO beer){
         BeerDTO savedBeer = beerService.saveNewBeer(beer);
-
         // best practice:
         // created headers for response to return a location header
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "api/v1/beers/" + savedBeer.getId());
-
-        // HttpStatus.CREATED = http response status code 201 created
-        // add headers to response
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
@@ -74,10 +74,8 @@ public class BeerController {
 
     @GetMapping(PATH_BEER_BY_ID)
     public BeerDTO getBeerByID(@PathVariable(PATHVAR_BEER_ID) UUID id){
-
-        log.debug("getBeerByID() called by BeerController controller");
-
-        return beerService.getBeerByID(id).orElseThrow(ResourceNotFoundException::new);
+        if (!beerService.beerExists(id)) throw new ResourceNotFoundException();
+        return beerService.getBeerByID(id);
     }
 
 

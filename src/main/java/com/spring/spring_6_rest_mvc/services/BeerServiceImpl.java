@@ -2,8 +2,8 @@ package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
-import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
-import com.spring.spring_6_rest_mvc.dtos.BeerStyle;
+import com.spring.spring_6_rest_mvc.models.BeerDTO;
+import com.spring.spring_6_rest_mvc.models.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +49,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Optional<BeerDTO> getBeerByID(UUID id) {
-        return Optional.ofNullable(beerMap.get(id));
+    public BeerDTO getBeerByID(UUID id) {
+        return beerMap.get(id);
     }
 
     @Override
@@ -128,6 +128,11 @@ public class BeerServiceImpl implements BeerService {
 
         beerToBeUpdated.setUpdateDate(LocalDateTime.now());
 
+    }
+
+    @Override
+    public boolean beerExists(UUID beerId) {
+        return beerMap.get(beerId) != null;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.spring.spring_6_rest_mvc.dtos;
+package com.spring.spring_6_rest_mvc.models;
 
 
 import lombok.Builder;
@@ -11,8 +11,8 @@ import java.util.UUID;
 @Builder
 public class CustomerDTO {
 
-    private String customerName;
     private UUID id;
+    private String customerName;
     private Integer version;
     private LocalDateTime createDate;
     private LocalDateTime lastModifiedDate;

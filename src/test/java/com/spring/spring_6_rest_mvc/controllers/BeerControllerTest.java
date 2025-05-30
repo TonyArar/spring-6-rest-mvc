@@ -1,7 +1,7 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
+import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import com.spring.spring_6_rest_mvc.services.BeerServiceImpl;
 
@@ -57,14 +57,21 @@ class BeerControllerTest {
         beerServiceImpl = new BeerServiceImpl();
     }
 
+    // FIXME
     @Test
-    void getBeerByIDBeerNotFound() throws Exception {
+    void testNonExistingBeer() throws Exception {
 
-        given(beerService.getBeerByID(any(UUID.class))).willReturn(Optional.empty());
+        given(beerService.beerExists(any(UUID.class))).willReturn(false);
 
-        mockMvc.perform(get(BeerController.PATH_BEER_BY_ID, UUID.randomUUID())
+        UUID nonExistingID = UUID.randomUUID();
+
+        mockMvc.perform(get(BeerController.PATH_BEER_BY_ID, nonExistingID)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+
+        verify(beerService).beerExists(uuidArgumentCaptor.capture());
+
+        assertEquals(nonExistingID,uuidArgumentCaptor.getValue());
 
     }
 
@@ -77,6 +84,8 @@ class BeerControllerTest {
         // and then marshall it with the ObjectMapper
         Map<String, Object> beerPatch = new HashMap<>();
         beerPatch.put("beerName", "TEST NAME");
+
+        given(beerService.beerExists(any(UUID.class))).willReturn(true);
 
         mockMvc.perform(patch(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .content(objectMapper.writeValueAsString(beerPatch))
@@ -99,6 +108,8 @@ class BeerControllerTest {
     @Test
     void testRemoveBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
+
+        given(beerService.beerExists(any(UUID.class))).willReturn(true);
 
         mockMvc.perform(delete(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -131,6 +142,8 @@ class BeerControllerTest {
     void testReplaceBeer() throws Exception {
 
         BeerDTO beer = beerServiceImpl.listBeers().get(0);
+
+        given(beerService.beerExists(any(UUID.class))).willReturn(true);
 
         mockMvc.perform(put(BeerController.PATH_BEER_BY_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -184,7 +197,8 @@ class BeerControllerTest {
         BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
 
         // stubbing mocked service
-        given(beerService.getBeerByID(testBeer.getId())).willReturn(Optional.of(testBeer));
+        given(beerService.beerExists(any(UUID.class))).willReturn(true);
+        given(beerService.getBeerByID(testBeer.getId())).willReturn(testBeer);
 
         // building request, performing it and performing expectations
         // (similar to assertions) with matchers

@@ -2,7 +2,7 @@ package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
-import com.spring.spring_6_rest_mvc.dtos.CustomerDTO;
+import com.spring.spring_6_rest_mvc.models.CustomerDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +43,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Optional<CustomerDTO> getCustomerByID(UUID id) {
-        return Optional.ofNullable(customerMap.get(id));
+    public CustomerDTO getCustomerByID(UUID id) {
+        return customerMap.get(id);
     }
 
     @Override
@@ -85,6 +85,11 @@ public class CustomerServiceImpl implements CustomerService {
             customerToBeUpdated.setCustomerName(newName);
         }
 
+    }
+
+    @Override
+    public boolean customerExists(UUID customerId) {
+        return customerMap.get(customerId) != null;
     }
 
 

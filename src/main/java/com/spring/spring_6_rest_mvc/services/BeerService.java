@@ -1,6 +1,6 @@
 package com.spring.spring_6_rest_mvc.services;
 
-import com.spring.spring_6_rest_mvc.dtos.BeerDTO;
+import com.spring.spring_6_rest_mvc.models.BeerDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +10,7 @@ public interface BeerService {
 
     List<BeerDTO> listBeers();
 
-    Optional<BeerDTO> getBeerByID(UUID id);
+    BeerDTO getBeerByID(UUID id);
 
     BeerDTO saveNewBeer(BeerDTO beer);
 
@@ -19,4 +19,7 @@ public interface BeerService {
     void removeById(UUID beerToBeRemovedId);
 
     void updateById(UUID beerToBeUpdatedId, BeerDTO beerPatchUpdate);
+
+    boolean beerExists(UUID beerId);
+
 }

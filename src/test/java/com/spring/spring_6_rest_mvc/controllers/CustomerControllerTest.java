@@ -1,11 +1,13 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.spring_6_rest_mvc.dtos.CustomerDTO;
+import com.spring.spring_6_rest_mvc.exception_handling.ResourceNotFoundException;
+import com.spring.spring_6_rest_mvc.models.CustomerDTO;
 import com.spring.spring_6_rest_mvc.services.CustomerService;
 import com.spring.spring_6_rest_mvc.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +54,19 @@ class CustomerControllerTest {
     }
 
     @Test
-    void getCustomerByIDBeerNotFound() throws Exception {
+    void testNonExistingCustomer() throws Exception {
 
-        given(customerService.getCustomerByID(any(UUID.class))).willReturn(Optional.empty());
+        UUID nonExistingID = UUID.randomUUID();
 
-        mockMvc.perform(get(CustomerController.PATH_CUSTOMER_BY_ID, UUID.randomUUID())
+        given(customerService.customerExists(any(UUID.class))).willReturn(false);
+
+        mockMvc.perform(get(CustomerController.PATH_CUSTOMER_BY_ID, nonExistingID)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+
+        verify(customerService).customerExists(uuidArgumentCaptor.capture());
+
+        assertEquals(nonExistingID,uuidArgumentCaptor.getValue());
 
     }
 
@@ -69,6 +77,8 @@ class CustomerControllerTest {
 
         Map<String, Object> customerPatch = new HashMap<>();
         customerPatch.put("customerName", "TEST NAME");
+
+        given(customerService.customerExists(any(UUID.class))).willReturn(true);
 
         mockMvc.perform(patch(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -88,6 +98,8 @@ class CustomerControllerTest {
 
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
 
+        given(customerService.customerExists(any(UUID.class))).willReturn(true);
+
         mockMvc.perform(delete(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId()))
                 .andExpect(status().isNoContent());
 
@@ -101,6 +113,8 @@ class CustomerControllerTest {
     void testReplaceCustomer() throws Exception {
 
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
+
+        given(customerService.customerExists(any(UUID.class))).willReturn(true);
 
         mockMvc.perform(put(CustomerController.PATH_CUSTOMER_BY_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -161,12 +175,14 @@ class CustomerControllerTest {
         CustomerDTO testCustomer = customerServiceImpl.listCustomers().get(0);
 
         // stub mocked CustomerService
-        given(customerService.getCustomerByID(any(UUID.class))).willReturn(Optional.of(testCustomer));
+        given(customerService.customerExists(any(UUID.class))).willReturn(true);
+        given(customerService.getCustomerByID(any(UUID.class))).willReturn(testCustomer);
 
         // build request, perform it and perform expectation on result
         // using MockMvc, Builders, Matchers and Actions
         mockMvc.perform(get(CustomerController.PATH_CUSTOMER_BY_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id", is(testCustomer.getId().toString())))
                 .andExpect(jsonPath("$.customerName", is(testCustomer.getCustomerName())));
