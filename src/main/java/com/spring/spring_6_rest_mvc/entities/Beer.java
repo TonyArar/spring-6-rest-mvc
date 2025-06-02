@@ -17,10 +17,16 @@ import java.util.UUID;
 @Entity
 public class Beer {
 
-    @Id // marks primary key field (id)
-    @GeneratedValue(generator = "UUID") // configures automatic key generation
+    // marks primary key field (id)
+    @Id
+    // configures automatic primary key (id) generation
+    @GeneratedValue(generator = "UUID")
     @UuidGenerator
+    // specify attribute
+    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
+
+    // hibernate locking uses this, auto-increments it, checks if version to be written is stale
     @Version
     private Integer version;
 
