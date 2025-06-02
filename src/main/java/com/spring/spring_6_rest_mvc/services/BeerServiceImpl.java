@@ -2,8 +2,13 @@ package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
+import com.spring.spring_6_rest_mvc.entities.Beer;
+import com.spring.spring_6_rest_mvc.mappers.BeerMapper;
 import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
+import com.spring.spring_6_rest_mvc.repositories.BeerRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -11,54 +16,38 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+@NoArgsConstructor
 @Slf4j
 @Service
 public class BeerServiceImpl implements BeerService {
 
-    private Map<UUID, BeerDTO> beerMap;
+    BeerRepository beerRepository;
+    BeerMapper beerMapper;
 
-    public BeerServiceImpl(){
-
-        this.beerMap = new HashMap<>();
-        Faker faker = new Faker();
-
-        int numberOfGeneratedBeers = 5;
-
-        for (int i = 1; i <= numberOfGeneratedBeers; i++){
-            Random random = new Random();
-            BeerDTO beer = BeerDTO.builder()
-                    .id(UUID.randomUUID())
-                    .version(random.nextInt(1,5))
-                    .beerName(faker.beer().name())
-                    .beerStyle(BeerStyle.values()[random.nextInt(0, 10)])
-                    .upc(faker.code().gtin8())
-                    .quantityOnHand(random.nextInt(0, 101))
-                    .price(BigDecimal.valueOf(random.nextDouble() * 100))
-                    .createdDate(LocalDateTime.now())
-                    .updateDate(LocalDateTime.now())
-                    .build();
-            this.beerMap.put(beer.getId(), beer);
-        }
-
+    public BeerServiceImpl(BeerRepository beerRepository, BeerMapper beerMapper) {
+        this.beerRepository = beerRepository;
+        this.beerMapper = beerMapper;
     }
 
     @Override
     public List<BeerDTO> listBeers(){
-        return new ArrayList<BeerDTO>(beerMap.values());
+        return beerRepository
+                .findAll()
+                .stream()
+                .map(beer -> beerMapper.beerToBeerDTO(beer))
+                .toList();
     }
 
     @Override
     public BeerDTO getBeerByID(UUID id) {
-        return beerMap.get(id);
+        return beerMapper.beerToBeerDTO(beerRepository.getReferenceById(id));
     }
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
-        // build beer from received beer to give id and dates
-        // because we won't get that from client request
-        BeerDTO beerToBeSaved = BeerDTO.builder()
-                .id(UUID.randomUUID())
+        Beer beerToBeSaved = Beer.builder()
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .beerName(beer.getBeerName())
@@ -67,15 +56,14 @@ public class BeerServiceImpl implements BeerService {
                 .upc(beer.getUpc())
                 .price(beer.getPrice())
                 .build();
-        // save beer
-        beerMap.put(beerToBeSaved.getId(), beerToBeSaved);
-        return beerToBeSaved;
+        Beer savedBeer = this.beerRepository.save(beerToBeSaved);
+        return beerMapper.beerToBeerDTO(savedBeer);
     }
 
     @Override
     public void replaceById(UUID beerToBeReplacedId, BeerDTO newBeer) {
 
-        BeerDTO existingBeer = beerMap.get(beerToBeReplacedId);
+        Beer existingBeer = beerRepository.getReferenceById(beerToBeReplacedId);
 
         existingBeer.setBeerName(newBeer.getBeerName());
         existingBeer.setBeerStyle(newBeer.getBeerStyle());
@@ -85,16 +73,19 @@ public class BeerServiceImpl implements BeerService {
         existingBeer.setCreatedDate(LocalDateTime.now());
         existingBeer.setUpdateDate(LocalDateTime.now());
 
+        beerRepository.save(existingBeer);
+
     }
 
     @Override
     public void removeById(UUID beerToBeRemovedId) {
-        beerMap.remove(beerToBeRemovedId);
+        beerRepository.deleteById(beerToBeRemovedId);
     }
 
     @Override
     public void updateById(UUID beerToBeUpdatedId, BeerDTO beerPatchUpdate) {
-        BeerDTO beerToBeUpdated = beerMap.get(beerToBeUpdatedId);
+
+        Beer beerToBeUpdated = beerRepository.getReferenceById(beerToBeUpdatedId);
 
         String newName = beerPatchUpdate.getBeerName();
         BeerStyle newStyle = beerPatchUpdate.getBeerStyle();
@@ -128,11 +119,18 @@ public class BeerServiceImpl implements BeerService {
 
         beerToBeUpdated.setUpdateDate(LocalDateTime.now());
 
+        beerRepository.save(beerToBeUpdated);
+
     }
 
     @Override
     public boolean beerExists(UUID beerId) {
-        return beerMap.get(beerId) != null;
+        try {
+            beerRepository.getReferenceById(beerId);
+            return true;
+        } catch (EntityNotFoundException entityNotFoundException) {
+            return false;
+        }
     }
 
 }

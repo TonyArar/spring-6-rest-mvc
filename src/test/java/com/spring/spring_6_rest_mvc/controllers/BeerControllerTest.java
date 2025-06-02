@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.mockito.BDDMockito.*;
 
-
 // restrict testing to controllers using WebMvcTest testing slice
 @WebMvcTest(controllers = {BeerController.class})
 class BeerControllerTest {
@@ -57,7 +56,7 @@ class BeerControllerTest {
         beerServiceImpl = new BeerServiceImpl();
     }
 
-    // FIXME
+
     @Test
     void testNonExistingBeer() throws Exception {
 

@@ -2,7 +2,14 @@ package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.github.javafaker.Faker;
+import com.spring.spring_6_rest_mvc.entities.Customer;
+import com.spring.spring_6_rest_mvc.mappers.BeerMapper;
+import com.spring.spring_6_rest_mvc.mappers.CustomerMapper;
 import com.spring.spring_6_rest_mvc.models.CustomerDTO;
+import com.spring.spring_6_rest_mvc.repositories.BeerRepository;
+import com.spring.spring_6_rest_mvc.repositories.CustomerRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,72 +17,66 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 
+@NoArgsConstructor
 @Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    private Map<UUID, CustomerDTO> customerMap;
+    CustomerRepository customerRepository;
+    CustomerMapper customerMapper;
 
-    public CustomerServiceImpl(){
-
-        this.customerMap = new HashMap<>();
-        Faker faker = new Faker();
-
-        int numberOfGeneratedCustomers = 5;
-
-        for (int i = 1; i <= numberOfGeneratedCustomers; i++){
-            Random random = new Random();
-            CustomerDTO customer = CustomerDTO.builder()
-                    .customerName(faker.funnyName().name())
-                    .id(UUID.randomUUID())
-                    .version(random.nextInt(1,5))
-                    .createDate(LocalDateTime.now())
-                    .lastModifiedDate(LocalDateTime.now())
-                    .build();
-            this.customerMap.put(customer.getId(), customer);
-        }
-
+    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+        this.customerRepository = customerRepository;
+        this.customerMapper = customerMapper;
     }
 
     @Override
     public List<CustomerDTO> listCustomers() {
-        return new ArrayList<CustomerDTO>(customerMap.values());
+        return customerRepository
+                .findAll()
+                .stream()
+                .map(customer -> customerMapper.customerToCustomerDTO(customer))
+                .toList();
     }
 
     @Override
     public CustomerDTO getCustomerByID(UUID id) {
-        return customerMap.get(id);
+        return customerMapper.customerToCustomerDTO(customerRepository.getReferenceById(id));
     }
 
     @Override
     public CustomerDTO saveNewCustomer(CustomerDTO customer) {
-        CustomerDTO customerToBeSaved = CustomerDTO.builder()
+        Customer customerToBeSaved = Customer.builder()
                 .customerName(customer.getCustomerName())
-                .id(UUID.randomUUID())
-                .version(1)
                 .createDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
                 .build();
-        customerMap.put(customerToBeSaved.getId(), customerToBeSaved);
-        return customerToBeSaved;
+        Customer savedCustomer = customerRepository.save(customerToBeSaved);
+        return customerMapper.customerToCustomerDTO(savedCustomer);
     }
 
     @Override
     public void replaceCustomerById(UUID customerToBeReplacedID, CustomerDTO newCustomer) {
-        CustomerDTO existingCustomer = customerMap.get(customerToBeReplacedID);
+
+        Customer existingCustomer = customerRepository.getReferenceById(customerToBeReplacedID);
+
         existingCustomer.setCustomerName(newCustomer.getCustomerName());
         existingCustomer.setCreateDate(LocalDateTime.now());
         existingCustomer.setLastModifiedDate(LocalDateTime.now());
+
+        customerRepository.save(existingCustomer);
+
     }
 
     @Override
     public void removeById(UUID customerToBeRemovedId) {
-        customerMap.remove(customerToBeRemovedId);
+        customerRepository.deleteById(customerToBeRemovedId);
     }
 
     @Override
     public void updateCustomerById(UUID customerToBeUpdatedId, CustomerDTO customerPatch) {
-        CustomerDTO customerToBeUpdated = customerMap.get(customerToBeUpdatedId);
+
+        Customer customerToBeUpdated = customerRepository.getReferenceById(customerToBeUpdatedId);
 
         String newName = customerPatch.getCustomerName();
 
@@ -85,11 +86,18 @@ public class CustomerServiceImpl implements CustomerService {
             customerToBeUpdated.setCustomerName(newName);
         }
 
+        customerRepository.save(customerToBeUpdated);
+
     }
 
     @Override
     public boolean customerExists(UUID customerId) {
-        return customerMap.get(customerId) != null;
+        try {
+            customerRepository.getReferenceById(customerId);
+            return true;
+        } catch (EntityNotFoundException entityNotFoundException) {
+            return false;
+        }
     }
 
 

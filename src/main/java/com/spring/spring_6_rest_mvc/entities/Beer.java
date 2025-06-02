@@ -30,6 +30,7 @@ public class Beer {
     @Version
     private Integer version;
 
+
     private String beerName;
     private BeerStyle beerStyle;
     private String upc;

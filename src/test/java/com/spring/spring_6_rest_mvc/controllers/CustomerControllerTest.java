@@ -27,6 +27,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO: rewrite tests
 @WebMvcTest(controllers = CustomerController.class)
 class CustomerControllerTest {
 
