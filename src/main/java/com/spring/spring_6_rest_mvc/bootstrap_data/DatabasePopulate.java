@@ -17,6 +17,9 @@ import java.util.Random;
 @Component
 public class DatabasePopulate implements CommandLineRunner {
 
+    public int numberOfGeneratedCustomers = 5;
+    public int numberOfGeneratedBeers = 5;
+
     private final BeerRepository beerRepository;
     private final CustomerRepository customerRepository;
 
@@ -34,7 +37,6 @@ public class DatabasePopulate implements CommandLineRunner {
 
     private void populateCustomers() {
         Faker faker = new Faker();
-        int numberOfGeneratedCustomers = 5;
         for (int i = 1; i <= numberOfGeneratedCustomers; i++){
             Customer customer = Customer.builder()
                     .customerName(faker.funnyName().name())
@@ -47,7 +49,6 @@ public class DatabasePopulate implements CommandLineRunner {
 
     private void populateBeers() {
         Faker faker = new Faker();
-        int numberOfGeneratedBeers = 5;
         for (int i = 1; i <= numberOfGeneratedBeers; i++){
             Random random = new Random();
             Beer beer = Beer.builder()
