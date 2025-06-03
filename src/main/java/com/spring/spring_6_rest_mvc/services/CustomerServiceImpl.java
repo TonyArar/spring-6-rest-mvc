@@ -11,6 +11,7 @@ import com.spring.spring_6_rest_mvc.repositories.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     CustomerRepository customerRepository;
     CustomerMapper customerMapper;
 
+    @Autowired
     public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;

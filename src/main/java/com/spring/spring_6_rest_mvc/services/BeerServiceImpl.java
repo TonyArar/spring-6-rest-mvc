@@ -10,6 +10,7 @@ import com.spring.spring_6_rest_mvc.repositories.BeerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ public class BeerServiceImpl implements BeerService {
     BeerRepository beerRepository;
     BeerMapper beerMapper;
 
+    @Autowired
     public BeerServiceImpl(BeerRepository beerRepository, BeerMapper beerMapper) {
         this.beerRepository = beerRepository;
         this.beerMapper = beerMapper;
