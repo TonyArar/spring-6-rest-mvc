@@ -94,12 +94,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public boolean customerExists(UUID customerId) {
-        try {
-            customerRepository.getReferenceById(customerId);
-            return true;
-        } catch (EntityNotFoundException entityNotFoundException) {
-            return false;
-        }
+        return customerRepository.existsById(customerId);
     }
 
 

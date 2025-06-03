@@ -127,12 +127,7 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public boolean beerExists(UUID beerId) {
-        try {
-            beerRepository.getReferenceById(beerId);
-            return true;
-        } catch (EntityNotFoundException entityNotFoundException) {
-            return false;
-        }
+        return beerRepository.existsById(beerId);
     }
 
 }
