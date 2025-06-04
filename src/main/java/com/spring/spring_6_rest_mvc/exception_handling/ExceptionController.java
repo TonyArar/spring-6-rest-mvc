@@ -3,8 +3,10 @@ package com.spring.spring_6_rest_mvc.exception_handling;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,5 +67,18 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body("Provided wrong type, required type: " + exception.getRequiredType().toString());
     }
 
+    // just for the heck of it
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity handleConstraintViolationException(){
+        log.warn("ConstraintViolationException");
+        return ResponseEntity.badRequest().body("ConstraintViolationException");
+    }
+
+    // just for the heck of it
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleDataIntegrityViolationException(){
+        log.warn("DataIntegrityViolationException");
+        return ResponseEntity.badRequest().body("DataIntegrityViolationException");
+    }
 
 }

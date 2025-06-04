@@ -32,6 +32,8 @@ public class Beer {
     private Integer version;
 
     @NotBlank
+    @Size(max = 50) // throws ConstraintViolationException (validates before even trying to save to database)
+    // @Column(length = 50) // throws DataIntegrityViolationException (validates when trying to save to database)
     private String beerName;
     @NotNull
     private BeerStyle beerStyle;
