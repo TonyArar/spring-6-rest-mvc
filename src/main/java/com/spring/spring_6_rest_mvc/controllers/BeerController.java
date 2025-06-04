@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,14 +52,15 @@ public class BeerController {
     }
 
     @PutMapping(PATH_BEER_BY_ID)
-    public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId, @RequestBody BeerDTO newBeer){
+    public ResponseEntity replaceBeerById(@PathVariable(PATHVAR_BEER_ID) UUID beerToBeReplacedId,
+                                          @Validated @RequestBody BeerDTO newBeer){
         if (!beerService.beerExists(beerToBeReplacedId)) throw new ResourceNotFoundException();
         beerService.replaceById(beerToBeReplacedId, newBeer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(PATH_ALL_BEERS)
-    public ResponseEntity createBeer(@RequestBody BeerDTO beer){
+    public ResponseEntity createBeer(@Validated @RequestBody BeerDTO beer){
         BeerDTO savedBeer = beerService.saveNewBeer(beer);
         // best practice:
         // created headers for response to return a location header

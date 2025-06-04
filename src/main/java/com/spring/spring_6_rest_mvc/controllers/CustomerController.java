@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class CustomerController {
     // REST API Endpoints
 
     @PatchMapping(PATH_CUSTOMER_BY_ID)
-    public ResponseEntity updateCustomerById(@PathVariable(PATHVAR_CUSTOMER_ID) UUID customerToBeUpdatedId,@RequestBody CustomerDTO customerPatch){
+    public ResponseEntity updateCustomerById(@PathVariable(PATHVAR_CUSTOMER_ID) UUID customerToBeUpdatedId, @RequestBody CustomerDTO customerPatch){
         if (!customerService.customerExists(customerToBeUpdatedId)) throw new ResourceNotFoundException();
         customerService.updateCustomerById(customerToBeUpdatedId, customerPatch);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -51,14 +52,15 @@ public class CustomerController {
     }
 
     @PutMapping(PATH_CUSTOMER_BY_ID)
-    public ResponseEntity replaceCustomerById(@PathVariable(PATHVAR_CUSTOMER_ID) UUID customerToBeReplacedID, @RequestBody CustomerDTO newCustomer){
+    public ResponseEntity replaceCustomerById(@PathVariable(PATHVAR_CUSTOMER_ID) UUID customerToBeReplacedID,
+                                              @Validated @RequestBody CustomerDTO newCustomer){
         if (!customerService.customerExists(customerToBeReplacedID)) throw new ResourceNotFoundException();
         customerService.replaceCustomerById(customerToBeReplacedID, newCustomer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(PATH_ALL_CUSTOMERS)
-    public ResponseEntity createCustomer(@RequestBody CustomerDTO customer){
+    public ResponseEntity createCustomer(@Validated @RequestBody CustomerDTO customer){
         CustomerDTO savedCustomer = customerService.saveNewCustomer(customer);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "api/v1/customers/" + savedCustomer.getId());
