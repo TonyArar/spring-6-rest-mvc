@@ -54,7 +54,7 @@ public class DatabasePopulate implements CommandLineRunner {
             Beer beer = Beer.builder()
                     .beerName(faker.beer().name())
                     .beerStyle(BeerStyle.values()[random.nextInt(0, 10)])
-                    .upc(faker.code().gtin8())
+                    .upc(faker.code().gtin13().substring(1))
                     .quantityOnHand(random.nextInt(0, 101))
                     .price(BigDecimal.valueOf(random.nextDouble() * 100))
                     .createdDate(LocalDateTime.now())

@@ -1,6 +1,7 @@
 package com.spring.spring_6_rest_mvc.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -24,8 +25,14 @@ public class Customer {
     @Version
     private Integer version;
 
+    @NotBlank
     private String customerName;
+
     private LocalDateTime createDate;
     private LocalDateTime lastModifiedDate;
+
+
+
+
 
 }

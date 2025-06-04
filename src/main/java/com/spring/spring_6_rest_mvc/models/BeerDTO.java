@@ -36,7 +36,7 @@ public class BeerDTO {
     @Size(min = 12, max = 12)
     private String upc;
 
-    @Positive
+    @PositiveOrZero
     @NotNull
     private Integer quantityOnHand;
 

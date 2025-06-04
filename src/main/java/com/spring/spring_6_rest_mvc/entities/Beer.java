@@ -2,6 +2,7 @@ package com.spring.spring_6_rest_mvc.entities;
 
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -30,13 +31,23 @@ public class Beer {
     @Version
     private Integer version;
 
-
+    @NotBlank
     private String beerName;
+    @NotNull
     private BeerStyle beerStyle;
+    @NotBlank
+    @Pattern(regexp = "\\d+")
+    @Size(min = 12, max = 12)
     private String upc;
+    @PositiveOrZero
+    @NotNull
     private Integer quantityOnHand;
+    @Positive
+    @NotNull
     private BigDecimal price;
+
     private LocalDateTime createdDate;
     private LocalDateTime updateDate;
+
 
 }
