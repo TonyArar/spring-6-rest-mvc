@@ -34,7 +34,6 @@ public class ExceptionController {
         return ResponseEntity.notFound().build();
     }
 
-
     // this is the Exception thrown by Jakarta Validation
     // if exception handling is not defined by us, such as here,
     // then it is handled by the DefaultHandlerExceptionResolver
@@ -59,7 +58,6 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(responseBody);
     }
 
-
     // if provided type in the request is not the required type
     // for example: if instead of a UUID, the client provides an int in the URI
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -69,16 +67,24 @@ public class ExceptionController {
 
     // just for the heck of it
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity handleConstraintViolationException(){
-        log.warn("ConstraintViolationException");
-        return ResponseEntity.badRequest().body("ConstraintViolationException");
+    public ResponseEntity handleConstraintViolationException(@Autowired ConstraintViolationException exception) {
+        List errors = exception.getConstraintViolations().stream().map(
+                constraintViolation -> {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put(constraintViolation.getPropertyPath().toString(),
+                            constraintViolation.getMessage());
+                    return errorMap;
+                }
+        ).toList();
+        // log.warn("ConstraintViolationException, errors: " + objectMapper.writeValueAsString(errors));
+        return ResponseEntity.badRequest().body(errors);
     }
 
     // just for the heck of it
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleDataIntegrityViolationException(){
-        log.warn("DataIntegrityViolationException");
-        return ResponseEntity.badRequest().body("DataIntegrityViolationException");
+    public ResponseEntity handleDataIntegrityViolationException(@Autowired DataIntegrityViolationException exception){
+        // log.warn("DataIntegrityViolationException, errors: " + exception.getMessage());
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
 }

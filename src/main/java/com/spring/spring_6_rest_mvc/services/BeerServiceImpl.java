@@ -111,7 +111,7 @@ public class BeerServiceImpl implements BeerService {
             beerToBeUpdated.setUpc(newUPC);
         }
 
-        if (newQuantityOnHand >= 0){
+        if (notNull.test(newQuantityOnHand) && newQuantityOnHand >= 0){
             beerToBeUpdated.setQuantityOnHand(newQuantityOnHand);
         }
 

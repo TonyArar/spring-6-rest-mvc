@@ -27,7 +27,7 @@ public class Customer {
     private Integer version;
 
     @NotBlank
-    @Size(max = 50) // throws ConstraintViolationException (validates before even trying to save to database)
+    @Size(max = 50) // throws ConstraintViolationException (validates before even trying to save to database - best practice)
     // @Column(length = 50) // throws DataIntegrityViolationException (validates when trying to save to database)
     private String customerName;
 
