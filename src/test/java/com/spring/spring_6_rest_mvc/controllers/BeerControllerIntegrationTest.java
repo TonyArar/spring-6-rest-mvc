@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -24,7 +25,11 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.hamcrest.Matchers.*;
+
 
 // @SpringBootTest for integration testing, brings in everything into the context
 // integration testing for BeerController:
@@ -66,6 +71,14 @@ class BeerControllerIntegrationTest {
     }
 
     @Test
+    void testListBeersByName() throws Exception {
+        mockMvc.perform(get(BeerController.PATH_ALL_BEERS)
+                        .queryParam("beerStyle", "ALE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(100)));
+    }
+
+    @Test
     void testUpdateBeerBadName() throws Exception {
 
         Beer beer = beerRepository.findAll().get(0);
@@ -90,14 +103,14 @@ class BeerControllerIntegrationTest {
 
     @Test
     void testGetById() {
-        BeerDTO beerDTO = beerController.listBeers().get(0);
+        BeerDTO beerDTO = beerController.listBeers(null,null,null,null,null).get(0);
         Beer beer = beerRepository.findAll().get(0);
         assertEquals(beerDTO.getId(), beer.getId());
     }
 
     @Test
     void testListBeers() {
-        List<BeerDTO> dtoList = beerController.listBeers();
+        List<BeerDTO> dtoList = beerController.listBeers(null,null,null,null,null);
         assertEquals(5,dtoList.size());
     }
 
@@ -105,7 +118,7 @@ class BeerControllerIntegrationTest {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> dtoList = beerController.listBeers();
+        List<BeerDTO> dtoList = beerController.listBeers(null,null,null,null,null);
         assertEquals(0,dtoList.size());
     }
 

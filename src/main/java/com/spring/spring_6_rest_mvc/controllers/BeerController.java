@@ -2,6 +2,7 @@ package com.spring.spring_6_rest_mvc.controllers;
 
 import com.spring.spring_6_rest_mvc.exception_handling.ResourceNotFoundException;
 import com.spring.spring_6_rest_mvc.models.BeerDTO;
+import com.spring.spring_6_rest_mvc.models.BeerStyle;
 import com.spring.spring_6_rest_mvc.services.BeerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.RequestScope;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,8 +73,14 @@ public class BeerController {
     }
 
     @GetMapping(PATH_ALL_BEERS)
-    public List<BeerDTO> listBeers(){
-        return beerService.listBeers();
+    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName,
+                                   @RequestParam(required = false) BeerStyle beerStyle,
+                                   @RequestParam(required = false) String upc,
+                                   @RequestParam(required = false) Integer quantityOnHand,
+                                   @RequestParam(required = false) BigDecimal price){
+        // any request parameter which isn't provided is null, when all are null,
+        // the implementation should simply return all beers without filtering
+        return beerService.listBeers(beerName, beerStyle, upc, quantityOnHand, price);
     }
 
     @GetMapping(PATH_BEER_BY_ID)

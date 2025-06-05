@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @NoArgsConstructor
 @Slf4j
@@ -33,13 +35,17 @@ public class BeerServiceImpl implements BeerService {
         this.beerMapper = beerMapper;
     }
 
+    // TODO: implement
     @Override
-    public List<BeerDTO> listBeers(){
-        return beerRepository
-                .findAll()
-                .stream()
-                .map(beer -> beerMapper.beerToBeerDTO(beer))
-                .toList();
+    public List<BeerDTO> listBeers(String beerName,
+                                   BeerStyle beerStyle,
+                                   String upc,
+                                   Integer quantityOnHand,
+                                   BigDecimal price){
+
+        return beerRepository.findAllByQueryParams(beerName, beerStyle, upc, quantityOnHand, price);
+
+        // return beerRepository.findAll().stream().map(beer -> beerMapper.beerToBeerDTO(beer)).toList();
     }
 
     @Override

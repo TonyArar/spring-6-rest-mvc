@@ -1,14 +1,20 @@
 package com.spring.spring_6_rest_mvc.services;
 
 import com.spring.spring_6_rest_mvc.models.BeerDTO;
+import com.spring.spring_6_rest_mvc.models.BeerStyle;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface BeerService {
 
-    List<BeerDTO> listBeers();
+    List<BeerDTO> listBeers(String beerName,
+                            BeerStyle beerStyle,
+                            String upc,
+                            Integer quantityOnHand,
+                            BigDecimal price);
 
     BeerDTO getBeerByID(UUID id);
 
