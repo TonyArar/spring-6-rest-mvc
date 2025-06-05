@@ -4,7 +4,9 @@ import com.spring.spring_6_rest_mvc.models.BeerStyle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,6 +25,11 @@ public class Beer {
     // configures automatic primary key (id) generation
     @GeneratedValue(generator = "UUID")
     @UuidGenerator
+    // Specifies the JDBC type-code to use for the column mapping.
+    // Fixes a lot of dbms-specific mapping issues that break queries!
+    // Here: basically explicitly tells hibernate to do mapping
+    // in both directions like so: UUID <-> VARCHAR
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     // specify attribute
     @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
