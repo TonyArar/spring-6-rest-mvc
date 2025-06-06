@@ -1,5 +1,6 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
+import com.spring.spring_6_rest_mvc.entities.Beer;
 import com.spring.spring_6_rest_mvc.exception_handling.ResourceNotFoundException;
 import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
@@ -80,7 +81,8 @@ public class BeerController {
                                    @RequestParam(required = false) BigDecimal price){
         // any request parameter which isn't provided is null, when all are null,
         // the implementation should simply return all beers without filtering
-        return beerService.listBeers(beerName, beerStyle, upc, quantityOnHand, price);
+        List<BeerDTO> result = beerService.listBeers(beerName, beerStyle, upc, quantityOnHand, price);
+        return result;
     }
 
     @GetMapping(PATH_BEER_BY_ID)

@@ -35,17 +35,16 @@ public class BeerServiceImpl implements BeerService {
         this.beerMapper = beerMapper;
     }
 
-    // TODO: implement
+    // TODO: rename params to match semantics
     @Override
     public List<BeerDTO> listBeers(String beerName,
                                    BeerStyle beerStyle,
                                    String upc,
                                    Integer quantityOnHand,
                                    BigDecimal price){
-
-        return beerRepository.findAllByQueryParams(beerName, beerStyle, upc, quantityOnHand, price);
-
-        // return beerRepository.findAll().stream().map(beer -> beerMapper.beerToBeerDTO(beer)).toList();
+        List<Beer> repoResult = beerRepository.findAllByQueryParams(beerName, beerStyle, upc, quantityOnHand, price);
+        return repoResult.stream().map(beerMapper::beerToBeerDTO).toList();
+        // without params: return beerRepository.findAll().stream().map(beer -> beerMapper.beerToBeerDTO(beer)).toList();
     }
 
     @Override
