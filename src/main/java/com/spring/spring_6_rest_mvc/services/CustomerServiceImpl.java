@@ -1,14 +1,10 @@
 package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
-import com.github.javafaker.Faker;
 import com.spring.spring_6_rest_mvc.entities.Customer;
-import com.spring.spring_6_rest_mvc.mappers.BeerMapper;
 import com.spring.spring_6_rest_mvc.mappers.CustomerMapper;
 import com.spring.spring_6_rest_mvc.models.CustomerDTO;
-import com.spring.spring_6_rest_mvc.repositories.BeerRepository;
 import com.spring.spring_6_rest_mvc.repositories.CustomerRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +29,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDTO> listCustomers() {
-        return customerRepository
-                .findAll()
-                .stream()
-                .map(customer -> customerMapper.customerToCustomerDTO(customer))
-                .toList();
+    public List<CustomerDTO> listCustomersByQueryParams(String customerName) {
+        List<Customer> repoResult = customerRepository.findAllByQueryParams(customerName);
+        return repoResult.stream().map(customerMapper::customerToCustomerDTO).toList();
     }
 
     @Override

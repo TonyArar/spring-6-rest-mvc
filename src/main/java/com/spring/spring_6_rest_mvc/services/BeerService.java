@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface BeerService {
 
-    List<BeerDTO> listBeers(String beerName,
+    List<BeerDTO> listBeersByQueryParams(String beerName,
                             BeerStyle beerStyle,
                             String upc,
                             Integer quantityOnHand,

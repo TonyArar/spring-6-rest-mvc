@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface CustomerService {
 
-    List<CustomerDTO> listCustomers();
+    List<CustomerDTO> listCustomersByQueryParams(String customerName);
 
     CustomerDTO getCustomerByID(UUID id);
 

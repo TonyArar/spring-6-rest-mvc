@@ -74,14 +74,14 @@ public class BeerController {
     }
 
     @GetMapping(PATH_ALL_BEERS)
-    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName,
+    public List<BeerDTO> listBeersByQueryParams(@RequestParam(required = false) String beerName,
                                    @RequestParam(required = false) BeerStyle beerStyle,
                                    @RequestParam(required = false) String upc,
                                    @RequestParam(required = false) Integer quantityOnHand,
                                    @RequestParam(required = false) BigDecimal price){
         // any request parameter which isn't provided is null, when all are null,
         // the implementation should simply return all beers without filtering
-        List<BeerDTO> result = beerService.listBeers(beerName, beerStyle, upc, quantityOnHand, price);
+        List<BeerDTO> result = beerService.listBeersByQueryParams(beerName, beerStyle, upc, quantityOnHand, price);
         return result;
     }
 

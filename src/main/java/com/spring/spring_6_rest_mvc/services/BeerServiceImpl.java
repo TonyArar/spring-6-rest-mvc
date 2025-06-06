@@ -37,7 +37,7 @@ public class BeerServiceImpl implements BeerService {
 
     // TODO: rename params to match semantics
     @Override
-    public List<BeerDTO> listBeers(String beerName,
+    public List<BeerDTO> listBeersByQueryParams(String beerName,
                                    BeerStyle beerStyle,
                                    String upc,
                                    Integer quantityOnHand,

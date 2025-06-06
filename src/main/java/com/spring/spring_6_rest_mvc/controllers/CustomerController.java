@@ -68,8 +68,8 @@ public class CustomerController {
     }
 
     @GetMapping(PATH_ALL_CUSTOMERS)
-    public List<CustomerDTO> listCustomers() {
-        return customerService.listCustomers();
+    public List<CustomerDTO> listCustomersByQueryParams(@RequestParam(required = false) String customerName) {
+        return customerService.listCustomersByQueryParams(customerName);
     }
 
     @GetMapping(PATH_CUSTOMER_BY_ID)
