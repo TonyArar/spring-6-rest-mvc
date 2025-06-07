@@ -1,7 +1,6 @@
 package com.spring.spring_6_rest_mvc.exception_handling;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +16,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionController {
 
-    @Autowired
-    ObjectMapper objectMapper;
+    // @Autowired
+    // ObjectMapper objectMapper;
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity handleResourceNotFoundException(@Autowired HttpServletRequest request){
@@ -41,8 +39,7 @@ public class ExceptionController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleDataValidationException(
             @Autowired HttpServletRequest request,
-            @Autowired MethodArgumentNotValidException exception)
-            throws JsonProcessingException {
+            @Autowired MethodArgumentNotValidException exception) {
         log.warn("MethodArgumentNotValidException handled, culprit request: "
                 + request.getMethod() + ": " + request.getRequestURI());
         // get field errors from exception to return them to client in the response body

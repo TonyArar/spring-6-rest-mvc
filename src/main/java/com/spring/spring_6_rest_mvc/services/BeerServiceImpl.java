@@ -1,13 +1,11 @@
 package com.spring.spring_6_rest_mvc.services;
 
 import ch.qos.logback.core.util.StringUtil;
-import com.github.javafaker.Faker;
 import com.spring.spring_6_rest_mvc.entities.Beer;
 import com.spring.spring_6_rest_mvc.mappers.BeerMapper;
 import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
 import com.spring.spring_6_rest_mvc.repositories.BeerRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @NoArgsConstructor
 @Slf4j
@@ -35,7 +30,7 @@ public class BeerServiceImpl implements BeerService {
         this.beerMapper = beerMapper;
     }
 
-    // TODO: rename params to match semantics
+
     @Override
     public List<BeerDTO> listBeersByQueryParams(String beerName,
                                    BeerStyle beerStyle,

@@ -1,10 +1,8 @@
 package com.spring.spring_6_rest_mvc.repositories;
 
 import com.spring.spring_6_rest_mvc.entities.Beer;
-import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
@@ -14,7 +12,6 @@ import java.util.UUID;
 public interface BeerRepository extends JpaRepository<Beer, UUID> {
 
 
-    // TODO: rename params to match semantics
     @Query(value = "SELECT b " +
             "FROM Beer b " +
             "WHERE ( :beerName IS NULL OR lower(b.beerName) LIKE lower(concat('%', ?1,'%')) ) " +

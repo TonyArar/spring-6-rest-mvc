@@ -1,6 +1,5 @@
 package com.spring.spring_6_rest_mvc.controllers;
 
-import com.spring.spring_6_rest_mvc.entities.Beer;
 import com.spring.spring_6_rest_mvc.exception_handling.ResourceNotFoundException;
 import com.spring.spring_6_rest_mvc.models.BeerDTO;
 import com.spring.spring_6_rest_mvc.models.BeerStyle;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.RequestScope;
 
 import java.math.BigDecimal;
 import java.util.List;

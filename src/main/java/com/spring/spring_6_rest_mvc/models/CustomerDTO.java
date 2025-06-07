@@ -2,9 +2,7 @@ package com.spring.spring_6_rest_mvc.models;
 
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
